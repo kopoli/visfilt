@@ -39,8 +39,13 @@
 		    (lambda (x) (if (not (null x))
 				    (find-file (car x)))))))
 
+
+(defvar vf-occur-jump-arrive-hook nil
+  "Hook is called when `vf-occur-jump' has jumped at the given
+position."  )
+
 (defun vf-occur-jump ()
-  "Uses visfilt to jump around current buffer"
+  "Uses visfilt to jump around the current buffer."
   (interactive)
   (let ((visfilt-buffer-name "*vf-occur*")
 	(visfilt-search-key-list (concat visfilt-search-key-list "./ "))
@@ -54,8 +59,13 @@
 		     (widen)
 		     (goto-char (point-min))
 		     (forward-line (1- (cadr x)))
-		     ;; inform org-mode to actually show the place
-		     (if (eq major-mode 'org-mode)
-			 (org-show-context))))))))
+		     (run-hooks 'vf-occur-jump-arrive-hook)))))))
+
+(eval-after-load 'org
+  (add-hook 'vf-occur-jump-arrive-hook
+	    (lambda ()
+	      ;; inform org-mode to actually show the place
+	      (if (eq major-mode 'org-mode)
+		  (org-show-context)))))
 
 (provide 'visfilt-util)
