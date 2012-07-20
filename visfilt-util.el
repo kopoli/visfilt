@@ -1,3 +1,33 @@
+;;; visfilt-util.el --- utilities using visfilt
+
+;; Copyright (C) 2012 Kalle Kankare
+
+;; Author: Kalle Kankare <kalle.kankare@iki.fi>
+;; Maintainer: Kalle Kankare <kalle.kankare@iki.fi>
+;; Created: 20 Jul 2012
+;; Keywords: visual filtering, utilities
+;; Version: 0.0
+
+;; This file is not part of GNU Emacs.
+
+;; GNU Emacs is free software: you can redistribute it and/or modify
+;; it under the terms of the GNU General Public License as published by
+;; the Free Software Foundation, either version 3 of the License, or
+;; (at your option) any later version.
+
+;; GNU Emacs is distributed in the hope that it will be useful,
+;; but WITHOUT ANY WARRANTY; without even the implied warranty of
+;; MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+;; GNU General Public License for more details.
+
+;; You should have received a copy of the GNU General Public License
+;; along with GNU Emacs.  If not, see <http://www.gnu.org/licenses/>.
+
+;;; Commentary:
+
+;; TODO
+
+;;; Code:
 
 (require 'recentf)
 (require 'visfilt)
@@ -30,7 +60,7 @@
 				    (switch-to-buffer (car x)))))))
 
 (defun vf-recent-file-list ()
-  "Uses visfilt to select from recent files"
+  "Uses visfilt to select from the list of recent files"
   (interactive)
 
   (let ((visfilt-search-key-list (concat visfilt-search-key-list "./"))
