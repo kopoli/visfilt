@@ -1,0 +1,42 @@
+* visfilt - Visual filtering library
+
+  This is a generic library for visually filtering elements. Elements can be
+  items of a list or lines of a buffer. 
+
+  It is heavily influenced by eassist.el from [[http://cedet.sourceforge.net/][CEDET]]. The goal is to have
+  similar user interface as eassist for lists and other filterable items,
+  because eassist is specific to function/method names received from semantic.
+
+  For example it can filter down recentf-list and open the selected
+  file. Filtering happens by first displaying a screenful of elements from the
+  list. From this point you can type a string that will be searched for in the
+  list. The view is updated each time a new character is typed. You can select
+  the wanted file name with RET and the file will be opened.
+
+** What can it do ?
+
+   The file visfilt.el is the generic core functionality and useless by
+   itself. The file visfilt-util.el has the following interactive functions:
+
+   *vf-find-file-in-tags*: Filters and opens files listed in TAGS tables. 
+
+   *vf-buffer-list*: Switches-to a buffer.
+
+   *vf-recent-file-list*: Opens a file from recentf-list.
+
+   *vf-occur-jump*: Jumps to a line in the current buffer. Output is similar
+    to occur.
+
+** Installation
+
+   Basically clone the repository and load/require the files visfilt.el and visfilt-util.el.
+
+   If you use [[https://github.com/dimitri/el-get][el-get]], you can use the following recipe to install this:
+
+#+BEGIN_SRC emacs-lisp
+(:name visfilt
+       :type git
+       :features (visfilt visfilt-util)
+       :url "https://github.com/kopoli/visfilt.git")
+#+END_SRC
+
