@@ -2,9 +2,6 @@
 (require 'recentf)
 (require 'visfilt)
 
-;; TODO ongelma: tags-file-name on eri visfilt-choose-funktion alussa kuin se
-;; on alimmaisessa lambdassa
-;; - tämä mahdollisesti korjaantui ao. lexical-let -konstrutiolla
 (defun vf-find-file-in-tags ()
   "Uses visfilt to select file in TAGS table"
   (interactive)
@@ -13,8 +10,6 @@
 	  (visfilt-search-key-list (concat visfilt-search-key-list "./"))
 	  (visfilt-buffer-name "*vf-tags-files*"))
       (visit-tags-table-buffer)
-      ;; (message "diri taalla %s" (file-name-directory tags-file-name))
-
       ;; make this variable bound here, because it can change when lambda is called
       (lexical-let ((tags-file-name tags-file-name))
 	(visfilt-choose
