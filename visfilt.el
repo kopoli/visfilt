@@ -39,7 +39,8 @@
 ;; Speed optimization: when writing additional character to buffer and count
 ;; is lower than max-items -> only search within the already found
 
-(require 'cl)
+(eval-when-compile
+  (require 'cl))
 
 (defvar visfilt-max-items nil)
 (defvar visfilt-buffer-name "*visfilt*")
@@ -74,29 +75,35 @@ screen. The second one depends on the type of filter-function. It
 can be a list index or a buffer position for example.")
 
 (defvar visfilt-filter-function-alist
-  '(
-    (listp . (visfilt-filter-list))
-    (bufferp . (visfilt-filter-buffer))
-    (stringp . (visfilt-filter-buffer (lambda (item)
-					
-)))
-    
-  
-  )
-)
+  '((cons . (visfilt-filter-list))
+    (buffer . (visfilt-filter-buffer))
+    (string . (visfilt-filter-buffer (lambda (arg) (get-buffer arg)))))
+  "List of types that are supported for filtering. The elements
+of the alist are of the following format:
+
+(type . (filtering-function conversion-function))
+
+The general functionality is that a variable of type `type' is
+given to the defun `visfilt-choose'. It is possibly converted
+to a proper format using `conversion-function' if it is not
+nil. The argument is then filtered using the
+`filtering-function'.
+
+Type is that of reported by `type-of'. Filtering-function is
+documented in with `vislist-choose-filter-function'. The
+`conversion-function' gets the argument `elements' of
+`visfilt-choose' and returns it in the proper format or nil, if
+it is invalid.")
 
 ;; internal variables
 (defvar visfilt-choose-filter-function nil
   "A function with the following arguments (elements count
 search-str). Filters the `elements' with the `search-str' at
-maximum of `count' times. `elements' can be a buffer or a
-list. Look for examples at `visfilt-filter-list' and
-`visfilt-filter-buffer'.
+maximum of `count' times. `elements' can be anything. Look for
+examples at `visfilt-filter-list' and `visfilt-filter-buffer'.
 
-TODO: this is currently an internal variable. Make it so that
-this could be set outside visfilt to support filtering of
-different types of `elements'.
-")
+This is set by defun `visfilt-choose' to a value from
+`vislist-filter-function-alist'.")
 
 (defvar visfilt-displayed-elements nil)
 
@@ -217,18 +224,18 @@ removes the previous search string overlay face."
 element through callback `callback'. "
   (interactive)
 
-  (cond 
-   ((listp elements)
-    (setq visfilt-choose-filter-function 'visfilt-filter-list))
-   ((or (stringp elements) (bufferp elements))
-    (setq visfilt-choose-filter-function 'visfilt-filter-buffer)
-    (if (stringp elements)
-	(setq elements (get-buffer elements))))
+  ;; select the appropriate filter to the given argument
+  (let* ((filter-elem (assoc (type-of elements) visfilt-filter-function-alist))
+	(convert (caddr filter-elem)))
+    (when (not filter-elem)
+      (error "unsupported type for the first argument"))
 
-   (t 
-    (error "unsupported type for the first argument"))
-   )
+    (setq visfilt-choose-filter-function (cadr filter-elem))
 
+    (when convert
+      (setq elements (funcall convert elements))
+      (when (not elements)
+	(error "conversion failed"))))
 
   (switch-to-buffer (get-buffer-create (generate-new-buffer-name visfilt-buffer-name)) t)
   (visfilt-mode)
