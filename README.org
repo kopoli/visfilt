@@ -33,10 +33,9 @@
 
    If you use [[https://github.com/dimitri/el-get][el-get]], you can use the following recipe to install this:
 
-#+BEGIN_SRC emacs-lisp
-   (:name visfilt
-    :type git
-    :features (visfilt visfilt-util)
-    :url "https://github.com/kopoli/visfilt.git")
-#+END_SRC
-
+   #+BEGIN_SRC emacs-lisp
+   ( :name visfilt
+     :type git
+     :features (visfilt visfilt-util)
+     :url "https://github.com/kopoli/visfilt.git")
+   #+END_SRC
