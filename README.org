@@ -29,9 +29,11 @@
 
 ** Installation
 
-   Basically clone the repository and load/require the files visfilt.el and visfilt-util.el.
+   Basically clone the repository and load/require the files visfilt.el and
+   visfilt-util.el.
 
-   If you use [[https://github.com/dimitri/el-get][el-get]], you can use the following or similar recipe to install this:
+   If you use [[https://github.com/dimitri/el-get][el-get]], you can use the following or similar recipe to install
+   this:
 
 #+BEGIN_SRC emacs-lisp
   (:name visfilt :type git :features (visfilt visfilt-util) :url "https://github.com/kopoli/visfilt.git")
