@@ -52,10 +52,13 @@
   (interactive)
   (let ((visfilt-search-key-list (concat visfilt-search-key-list "/"))
 	(visfilt-buffer-name "*vf-select-buffer*"))
-    (visfilt-choose (mapcar (lambda (buf) 
-			      (with-current-buffer buf
-				(buffer-name)))  
-			    (buffer-list))
+    (visfilt-choose (delq nil (mapcar (lambda (buf)
+				    (with-current-buffer buf
+				      (let ((name (buffer-name)))
+					(if (string= (substring name 0 1) " ")
+					    nil
+					  name))))
+				      (buffer-list)))
 		    (lambda (x) (if (not (null x)) 
 				    (switch-to-buffer (car x)))))))
 
