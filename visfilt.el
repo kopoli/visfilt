@@ -204,8 +204,8 @@ removes the previous search string overlay face."
   (interactive)
   (visfilt-search-string-modify t))
 
-(define-derived-mode visfilt-mode nil "Visual list"
-  "Visual list mode.
+(define-derived-mode visfilt-mode nil "VF"
+  "Visual filtering mode.
   \\{visfilt-mode-map}"
 )
 
