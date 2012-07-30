@@ -258,7 +258,7 @@ element through callback `callback'. "
 ;;TODO ekassa tapauksessa formaatti myös oikeaksi
 (defun visfilt-filter-list (elements count search-str)
   "Filters a list with the `search-str'."
-  (if (>= (length visfilt-search-string) 0)
+  (if (>= (length search-str) 0)
       (let (matched (pos 0))
 	(every  '(lambda (x) 
 		   (when (string-match search-str x)
