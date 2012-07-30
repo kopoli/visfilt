@@ -150,12 +150,12 @@ function that is stored in `visfilt-choose-callback'."
 	 (displayed 
 	  (funcall visfilt-choose-filter-function 
 		   visfilt-search-data max-items 
-		   (visfilt-escape-re visfilt-search-string)))
+		   (regexp-quote visfilt-search-string)))
 	 start-point)
 
     ;; insert the header
     (insert (funcall visfilt-header-format-function 
-		     (visfilt-escape-re visfilt-search-string) (length displayed)))
+		     (regexp-quote visfilt-search-string) (length displayed)))
     (setq start-point (point))
 
     (setq visfilt-displayed-elements displayed)
@@ -169,17 +169,8 @@ function that is stored in `visfilt-choose-callback'."
     (goto-char (point-min))
     (if (> (length visfilt-search-string) 0)
 	(hi-lock-face-buffer 
-	 visfilt-search-string visfilt-search-string-face))
+	 (regexp-quote visfilt-search-string) visfilt-search-string-face))
     (goto-char start-point)))
-
-(defun visfilt-escape-re (string)
-  "Escape regular expression syntax in a string"
-  (mapconcat #'(lambda (x)
-		(setq x (char-to-string x))
-		(if (string-match "[.+?|*\\^$[]" x)
-		    (concat "\\" x)
-		  x))
-	     string ""))
 
 (defun visfilt-search-string-modify (&optional decrement)
   "Either adds the `last-command-event' as a string to the search
@@ -188,7 +179,7 @@ removes the previous search string overlay face."
   (interactive)
 
   (if (> (length visfilt-search-string) 0)
-      (hi-lock-unface-buffer visfilt-search-string))
+      (hi-lock-unface-buffer (regexp-quote visfilt-search-string)))
   (if decrement
       (let ((len (length visfilt-search-string)))
 	(if (> len 0)
