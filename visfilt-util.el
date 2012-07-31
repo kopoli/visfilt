@@ -5,8 +5,6 @@
 ;; Author: Kalle Kankare <kalle.kankare@iki.fi>
 ;; Maintainer: Kalle Kankare <kalle.kankare@iki.fi>
 ;; Created: 20 Jul 2012
-;; Keywords: visual filtering, utilities
-;; Version: 0.0
 
 ;; This file is not part of GNU Emacs.
 
@@ -102,3 +100,5 @@ position."  )
 		  (org-show-context)))))
 
 (provide 'visfilt-util)
+
+;;; visfilt-util.el ends here

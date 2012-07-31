@@ -265,9 +265,6 @@ element through callback `callback'. "
 	matched)
     (subseq visfilt-search-data 0 count)))
 
-;; move-to-window-line 0
-;; line-number-at-pos 
-
 (defun visfilt-filter-buffer (buffer count search-str)
   "Filters a buffer with the `search-str'."
   (let (ret)
@@ -287,3 +284,5 @@ element through callback `callback'. "
 
 
 (provide 'visfilt)
+
+;;; visfilt.el ends here
