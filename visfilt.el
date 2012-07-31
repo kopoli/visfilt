@@ -112,7 +112,9 @@ This is set by defun `visfilt-choose' to a value from
     (define-key map (kbd "<backspace>") 'visfilt-search-string-decrement)
 
     (dolist (k (string-to-list visfilt-search-key-list))
-      (define-key map (read-kbd-macro (char-to-string k))
+      (setq k (char-to-string k))
+      (when (string= k " ") (setq k "SPC"))
+      (define-key map (read-kbd-macro k)
 	'visfilt-search-string-modify))
 
     (setq visfilt-mode-map map)))
