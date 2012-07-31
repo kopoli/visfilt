@@ -267,20 +267,22 @@ element through callback `callback'. "
 
 (defun visfilt-filter-buffer (buffer count search-str)
   "Filters a buffer with the `search-str'."
-  (let (ret)
+  (let (ret
+	(search-str-p (> (length search-str) 0)))
     (with-current-buffer buffer
       (goto-char (point-min))
-      (when (> (length search-str) 0)
-	(while (> count 0)
-	  (let ((pos (re-search-forward search-str nil t nil)))
-	    (if pos
-		(add-to-list 'ret 
-			     (list (buffer-substring (point-at-bol) (point-at-eol))
-				   (line-number-at-pos)) t)
-	      (setq count 0))
-	    (setq count (1- count))
-	    )))
-      ret)))
+      (while (> count 0)
+	(let ((pos (if search-str-p
+		       (re-search-forward search-str nil t nil)
+		     (point))))
+	  (if pos
+	      (progn
+		(setq ret (cons (list (buffer-substring (point-at-bol) (point-at-eol))
+				   (line-number-at-pos)) ret))
+		(goto-char (1+ (point-at-eol))))
+	    (setq count 0))
+	  (setq count (1- count))))
+      (nreverse ret))))
 
 
 (provide 'visfilt)
