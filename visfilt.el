@@ -145,6 +145,7 @@ function that is stored in `visfilt-choose-callback'."
 
 (defun visfilt-update ()
   "Updates the visfilt buffer with a search string."
+  (setq buffer-read-only nil)
   (erase-buffer)
   (let* ((max-items (or visfilt-max-items 
 			(- (window-height) 1 
@@ -172,7 +173,8 @@ function that is stored in `visfilt-choose-callback'."
     (if (> (length visfilt-search-string) 0)
 	(hi-lock-face-buffer 
 	 (regexp-quote visfilt-search-string) visfilt-search-string-face))
-    (goto-char start-point)))
+    (goto-char start-point)
+  (setq buffer-read-only t)))
 
 (defun visfilt-search-string-modify (&optional decrement)
   "Either adds the `last-command-event' as a string to the search
