@@ -48,7 +48,7 @@
 (defun vf-buffer-list ()
   "Uses visfilt to select buffer"
   (interactive)
-  (let ((visfilt-search-key-list (concat visfilt-search-key-list "/"))
+  (let ((visfilt-search-key-list (concat visfilt-search-key-list ".*/"))
 	(visfilt-buffer-name "*vf-select-buffer*"))
     (visfilt-choose (delq nil (mapcar (lambda (buf)
 				    (with-current-buffer buf
