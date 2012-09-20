@@ -49,7 +49,7 @@ the following:
   (lambda (&optional search-str count))
 
 if both arguments are nil, return the number of rows that the
-header occupies. Look at `visfilt-header-default-format-function' 
+header occupies. Look at `visfilt-header-default-format-function'
 for an example." )
 
 (defvar visfilt-display-line-function #'car
@@ -103,7 +103,7 @@ This is set by defun `visfilt-choose' to a value from
 
 ;; core functionality
 
-(defun visfilt-regenerate-keymap() 
+(defun visfilt-regenerate-keymap()
   (let ((map (make-sparse-keymap)))
     (suppress-keymap map)
 
@@ -135,7 +135,7 @@ function that is stored in `visfilt-choose-callback'."
   (let ((string (filter-buffer-substring (point-at-bol) (point-at-eol)))
 	(callback visfilt-choose-callback)
 	(pos (line-number-at-pos))
-	(elem (nth (- (line-number-at-pos) (funcall visfilt-header-format-function)) 
+	(elem (nth (- (line-number-at-pos) (funcall visfilt-header-format-function))
 		   visfilt-displayed-elements)))
 
     (kill-buffer (current-buffer))
@@ -147,17 +147,17 @@ function that is stored in `visfilt-choose-callback'."
   "Updates the visfilt buffer with a search string."
   (setq buffer-read-only nil)
   (erase-buffer)
-  (let* ((max-items (or visfilt-max-items 
-			(- (window-height) 1 
+  (let* ((max-items (or visfilt-max-items
+			(- (window-height) 1
 			   (funcall visfilt-header-format-function))))
-	 (displayed 
-	  (funcall visfilt-choose-filter-function 
-		   visfilt-search-data max-items 
+	 (displayed
+	  (funcall visfilt-choose-filter-function
+		   visfilt-search-data max-items
 		   (regexp-quote visfilt-search-string)))
 	 start-point)
 
     ;; insert the header
-    (insert (funcall visfilt-header-format-function 
+    (insert (funcall visfilt-header-format-function
 		     (regexp-quote visfilt-search-string) (length displayed)))
     (setq start-point (point))
 
@@ -171,7 +171,7 @@ function that is stored in `visfilt-choose-callback'."
     (set-buffer-modified-p nil)
     (goto-char (point-min))
     (if (> (length visfilt-search-string) 0)
-	(hi-lock-face-buffer 
+	(hi-lock-face-buffer
 	 (regexp-quote visfilt-search-string) visfilt-search-string-face))
     (goto-char start-point)
   (setq buffer-read-only t)))
@@ -187,15 +187,15 @@ removes the previous search string overlay face."
   (if decrement
       (let ((len (length visfilt-search-string)))
 	(if (> len 0)
-	    (setq visfilt-search-string 
-		  (subseq visfilt-search-string 0 
+	    (setq visfilt-search-string
+		  (subseq visfilt-search-string 0
 			  (min (- len 1) len)))))
-    (setq visfilt-search-string (concat visfilt-search-string 
+    (setq visfilt-search-string (concat visfilt-search-string
 					(char-to-string last-command-event))))
   (visfilt-update))
 
 (defun visfilt-search-string-decrement ()
-  "Decrements the visfilt-search-string by one character." 
+  "Decrements the visfilt-search-string by one character."
   (interactive)
   (visfilt-search-string-modify t))
 
@@ -255,7 +255,7 @@ element through callback `callback'. "
   "Filters a list with the `search-str'."
   (if (>= (length search-str) 0)
       (let (matched (pos 0))
-	(every  '(lambda (x) 
+	(every  '(lambda (x)
 		   (when (string-match search-str x)
 		     (push (list x pos) matched)
 		     (setq count (1- count)))

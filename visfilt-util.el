@@ -42,7 +42,7 @@
       (lexical-let ((tags-file-name tags-file-name))
 	(visfilt-choose
 	 (tags-table-files)
-	 (lambda (x) 
+	 (lambda (x)
 	   (find-file (expand-file-name (car x) (file-name-directory tags-file-name)))))))))
 
 (defun vf-buffer-list ()
@@ -57,7 +57,7 @@
 					    nil
 					  name))))
 				      (buffer-list)))
-		    (lambda (x) (if (not (null x)) 
+		    (lambda (x) (if (not (null x))
 				    (switch-to-buffer (car x)))))))
 
 (defun vf-recent-file-list ()
@@ -80,11 +80,11 @@ position."  )
   (interactive)
   (let ((visfilt-buffer-name "*vf-occur*")
 	(visfilt-search-key-list (concat visfilt-search-key-list "./ "))
-	(visfilt-display-line-function 
+	(visfilt-display-line-function
 	 #'(lambda (elem)
 	    (format "%4d %s" (cadr elem) (car elem)))))
-    (visfilt-choose 
-     (current-buffer) 
+    (visfilt-choose
+     (current-buffer)
      (lambda (x) (when x
 		   (save-restriction
 		     (widen)
