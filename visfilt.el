@@ -213,14 +213,14 @@ element through callback `callback'. "
   (let* ((filter-elem (assoc (type-of elements) visfilt-filter-function-alist))
 	(convert (caddr filter-elem)))
     (when (not filter-elem)
-      (error "unsupported type for the first argument"))
+      (error "visfilt: unsupported type for the first argument"))
 
     (setq visfilt-choose-filter-function (cadr filter-elem))
 
     (when convert
       (setq elements (funcall convert elements))
       (when (not elements)
-	(error "conversion failed"))))
+	(error "visfilt: conversion to a supported type failed"))))
 
   (switch-to-buffer (get-buffer-create (generate-new-buffer-name visfilt-buffer-name)) t)
   (visfilt-mode)
