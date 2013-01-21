@@ -23,7 +23,13 @@
 
 ;;; Commentary:
 
-;; TODO
+;; This file includes special functionality around the generic visfilt
+;; core. The following functions are included:
+
+;; - vf-find-file-in-tags -- Filters the list of files found from TAGS files.
+;; - vf-buffer-list -- Filters the buffer list.
+;; - vf-recent-file-list -- Filters the recentf-list.
+;; - vf-occur-jump -- Filters the current buffer in similar manner as occur.
 
 ;;; Code:
 

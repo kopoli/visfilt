@@ -7,7 +7,7 @@
 ;; Maintainer: Kalle Kankare <kalle.kankare@iki.fi>
 ;; Created: 15 Jul 2012
 ;; Keywords: display utility, filtering
-;; Version: 0.0
+;; Version: 1.0
 
 ;; This file is not part of GNU Emacs.
 
@@ -26,7 +26,11 @@
 
 ;;; Commentary:
 
-;; TODO
+;; Visfilt is a generic visual filtering library. The main functionality is to
+;; incrementally add to search string with each keypress which will filter the
+;; elements on screen.
+
+;; Visfilt is heavily influenced by eassist.el from CEDET.
 
 ;;; Code:
 
