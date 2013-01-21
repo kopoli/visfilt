@@ -109,7 +109,7 @@ This is set by defun `visfilt-choose' to a value from
 
     (define-key map (kbd "C-g") 'kill-this-buffer)
     (define-key map (kbd "<RET>") 'visfilt-run-callback)
-    (define-key map (kbd "<backspace>") 'visfilt-search-string-decrement)
+    (define-key map (kbd "DEL") 'visfilt-search-string-decrement)
 
     (dolist (k (string-to-list visfilt-search-key-list))
       (setq k (char-to-string k))
