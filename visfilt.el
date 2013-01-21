@@ -29,8 +29,7 @@
 
 ;;; Code:
 
-(eval-when-compile
-  (require 'cl))
+(require 'cl-lib)
 
 (defvar visfilt-max-items nil)
 (defvar visfilt-buffer-name "*visfilt*")
@@ -188,7 +187,7 @@ removes the previous search string overlay face."
       (let ((len (length visfilt-search-string)))
 	(if (> len 0)
 	    (setq visfilt-search-string
-		  (subseq visfilt-search-string 0
+		  (cl-subseq visfilt-search-string 0
 			  (min (- len 1) len)))))
     (setq visfilt-search-string (concat visfilt-search-string
 					(char-to-string last-command-event))))
@@ -211,7 +210,7 @@ element through callback `callback'. "
 
   ;; select the appropriate filter to the given argument
   (let* ((filter-elem (assoc (type-of elements) visfilt-filter-function-alist))
-	(convert (caddr filter-elem)))
+	(convert (cl-caddr filter-elem)))
     (when (not filter-elem)
       (error "visfilt: unsupported type for the first argument"))
 
@@ -250,22 +249,12 @@ element through callback `callback'. "
 
 ;; peripheral functionality
 
-;;TODO ekassa tapauksessa formaatti myös oikeaksi
 (defun visfilt-filter-list (elements count search-str)
   "Filters a list with the `search-str'."
-  (if (>= (length search-str) 0)
-      (let (matched (pos 0))
-	(every  '(lambda (x)
-		   (when (string-match search-str x)
-		     (push (list x pos) matched)
-		     (setq count (1- count)))
-		   (setq pos (1+ pos))
-		   (if (<= count 0)
-		       nil
-		     t))
-		elements)
-	matched)
-    (subseq visfilt-search-data 0 count)))
+  (cl-loop for e in elements
+	   counting e into pos
+	   when (and (string-match search-str e) (> (setq count (1- count)) 0))
+	   collect (list e pos)))
 
 (defun visfilt-filter-buffer (buffer count search-str)
   "Filters a buffer with the `search-str'."
