@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 ;;; visfilt.el --- generic visual filter
 
 ;; Copyright (C) 2012 Kalle Kankare
