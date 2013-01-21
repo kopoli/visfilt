@@ -64,22 +64,22 @@ First one must be a string. It is displayed by default on
 screen. The second one depends on the type of filter-function. It
 can be a list index or a buffer position for example.")
 
-(defvar visfilt-filter-function-alist
-  '((cons . (visfilt-filter-list))
-    (buffer . (visfilt-filter-buffer))
-    (string . (visfilt-filter-buffer (lambda (arg) (get-buffer arg)))))
+(defvar visfilt-filter-functions
+  '((listp . (visfilt-filter-list))
+    (bufferp . (visfilt-filter-buffer))
+    (stringp . (visfilt-filter-buffer (lambda (arg) (get-buffer arg)))))
   "List of types that are supported for filtering. The elements
 of the alist are of the following format:
 
-  (type . (filtering-function conversion-function))
+\(type-predicate . (filtering-function conversion-function))
 
-The general functionality is that a variable of type `type' is
-given to the defun `visfilt-choose'. It is possibly converted
-to a proper format using `conversion-function' if it is not
-nil. The argument is then filtered using the
+The general functionality is that a variable of type
+`type-predicate' is given to the defun `visfilt-choose'. It is
+possibly converted to a proper format using `conversion-function'
+if it is not nil. The argument is then filtered using the
 `filtering-function'.
 
-Type is that of reported by `type-of'. Filtering-function is
+The type-predicate is a type predicate. Filtering-function is
 documented in with `vislist-choose-filter-function'. The
 `conversion-function' gets the argument `elements' of
 `visfilt-choose' and returns it in the proper format or nil, if
@@ -201,8 +201,16 @@ removes the previous search string overlay face."
 
 (define-derived-mode visfilt-mode nil "VF"
   "Visual filtering mode.
-  \\{visfilt-mode-map}"
-)
+  \\{visfilt-mode-map}")
+
+(defun visfilt--get-filter (element filter-list)
+  "Gets the proper filter element from a list similar
+to `visfilt-filter-functions'"
+  (if filter-list
+      (if (funcall (caar filter-list) element)
+	  (car filter-list)
+	(visfilt--get-filter element (cdr filter-list)))
+    nil))
 
 (defun visfilt-choose (elements callback)
   "Choose an element from `elements' using visfilt and return the
@@ -210,7 +218,7 @@ element through callback `callback'. "
   (interactive)
 
   ;; select the appropriate filter to the given argument
-  (let* ((filter-elem (assoc (type-of elements) visfilt-filter-function-alist))
+  (let* ((filter-elem (visfilt--get-filter elements visfilt-filter-functions))
 	(convert (cl-caddr filter-elem)))
     (when (not filter-elem)
       (error "visfilt: unsupported type for the first argument"))
@@ -248,7 +256,7 @@ element through callback `callback'. "
   (visfilt-update))
 
 
-;; peripheral functionality
+;; Filtering functionality for different objects
 
 (defun visfilt-filter-list (elements count search-str)
   "Filters a list with the `search-str'."
