@@ -102,7 +102,7 @@ position."  )
 		     (run-hooks 'vf-occur-jump-arrive-hook)))))))
 
 (eval-after-load 'org
-  (add-hook 'vf-occur-jump-arrive-hook
+  '(add-hook 'vf-occur-jump-arrive-hook
 	    (lambda ()
 	      ;; inform org-mode to actually show the place
 	      (if (eq major-mode 'org-mode)
