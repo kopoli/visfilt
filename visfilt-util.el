@@ -34,7 +34,6 @@
 
 ;;; Code:
 
-(require 'recentf)
 (require 'visfilt)
 
 (defun vf-find-file-in-tags ()
@@ -69,15 +68,16 @@
 		    (lambda (x) (if (not (null x))
 				    (switch-to-buffer (car x)))))))
 
-(defun vf-recent-file-list ()
-  "Uses visfilt to select from the list of recent files"
-  (interactive)
+(eval-after-load 'recentf
+  '(defun vf-recent-file-list ()
+    "Uses visfilt to select from the list of recent files"
+    (interactive)
 
-  (let ((visfilt-search-key-list (concat visfilt-search-key-list "./"))
-	(visfilt-buffer-name "*vf-recentf*"))
-    (visfilt-choose recentf-list
-		    (lambda (x) (if (not (null x))
-				    (find-file (car x)))))))
+    (let ((visfilt-search-key-list (concat visfilt-search-key-list "./"))
+	  (visfilt-buffer-name "*vf-recentf*"))
+      (visfilt-choose recentf-list
+		      (lambda (x) (if (not (null x))
+				      (find-file (car x))))))))
 
 
 (defvar vf-occur-jump-arrive-hook nil
