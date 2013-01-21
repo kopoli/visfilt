@@ -1,3 +1,4 @@
+;; -*- lexical-binding: t -*-
 ;;; visfilt-util.el --- utilities using visfilt
 
 ;; Copyright (C) 2012 Kalle Kankare
@@ -44,12 +45,14 @@
 	  (visfilt-search-key-list (concat visfilt-search-key-list "./"))
 	  (visfilt-buffer-name "*vf-tags-files*"))
       (visit-tags-table-buffer)
-      ;; make this variable bound here, because it can change when lambda is called
-      (lexical-let ((tags-file-name tags-file-name))
+
+      ;; bind tags-file-name with lexical binding, because it might change
+      ;; before entering the callback
+      (let ((tf tags-file-name))
 	(visfilt-choose
 	 (tags-table-files)
 	 (lambda (x)
-	   (find-file (expand-file-name (car x) (file-name-directory tags-file-name)))))))))
+	   (find-file (expand-file-name (car x) (file-name-directory tf)))))))))
 
 (defun vf-buffer-list ()
   "Uses visfilt to select buffer"
