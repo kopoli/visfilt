@@ -239,6 +239,9 @@ removes the previous search string overlay face."
 
   (mapc #'(lambda (x) (make-local-variable x))
 	'(visfilt--current-configuration-alist))
+
+  (setq truncate-lines t)
+  (hi-lock-mode 1)
 )
 
 (defun visfilt--get-filter (element filter-list)
@@ -275,7 +278,6 @@ The `CONFIG' is a configuration which will override
 					(visfilt--get :buffer-name config))) t)
   (visfilt-mode)
 
-  
   ;; (make-local-variable 'visfilt-mode-map)
   (make-local-variable 'visfilt-search-string)
   (make-local-variable 'visfilt-search-data)
@@ -292,10 +294,6 @@ The `CONFIG' is a configuration which will override
   (setq visfilt-search-data elements)
   (setq visfilt-choose-callback callback)
 
-  (setq truncate-lines t)
-
-  ;; (message "callback on täällä %s" callback)
-  (hi-lock-mode 1)
   (visfilt-update))
 
 
