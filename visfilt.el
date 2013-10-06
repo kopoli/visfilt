@@ -156,7 +156,7 @@ This is set by defun `visfilt' to a value from
 
 ;;; core functionality
 
-(defun visfilt--get (ident &optional conf)
+(defsubst visfilt--get (ident &optional conf)
   "Get configuration item named `IDENT'.
 Get the configuration from `CONF' or from
 `visfilt--current-configuration-alist'."
@@ -168,7 +168,7 @@ Get the configuration from `CONF' or from
     (suppress-keymap map)
 
     (define-key map (kbd "C-g") 'kill-this-buffer)
-    (define-key map (kbd "<RET>") 'visfilt--run-callback)
+    (define-key map (kbd "<RET>") 'visfilt-run-callback)
     (define-key map (kbd "DEL") 'visfilt-search-string-decrement)
 
     (dolist (k (string-to-list (concat (visfilt--get :search-key-list)
@@ -194,7 +194,7 @@ returns the number of rows the header will take."
       2
     (format "String(%d): %s\n" count searchstr)))
 
-(defun visfilt--run-callback ()
+(defun visfilt-run-callback ()
   "Run the callback that is given to `visfilt'.
 This is run when the wanted element is selected."
 
@@ -278,8 +278,7 @@ removes the previous search string overlay face."
 	  visfilt--search-string))
 
   (setq truncate-lines t)
-  (hi-lock-mode 1)
-)
+  (hi-lock-mode 1))
 
 (defun visfilt--get-filter (element filter-list)
   "Get the proper filter element from a list similar
@@ -303,21 +302,20 @@ The `CONFIG' is a configuration which will override
     (when (not filter-elem)
       (error "visfilt: unsupported type for the first argument"))
 
-    (setq visfilt--choose-filter-function (cadr filter-elem))
-
     (when convert
       (setq elements (funcall convert elements))
       (when (not elements)
-	(error "visfilt: conversion to a supported type failed"))))
+	(error "visfilt: conversion to a supported type failed")))
 
-  (setq config (append config `(:choose-callback ,callback)
-		       visfilt-default-configuration-alist))
-  (switch-to-buffer (get-buffer-create (generate-new-buffer-name
-					(visfilt--get :buffer-name config))) t)
+    (setq config (append config `(:choose-callback ,callback)
+			 visfilt-default-configuration-alist))
+    (switch-to-buffer (get-buffer-create (generate-new-buffer-name
+					  (visfilt--get :buffer-name config))) t)
 
-  (visfilt-mode)
+    (visfilt-mode)
 
-  ;; check if regular expressions
+    (make-local-variable 'visfilt--choose-filter-function)
+    (setq visfilt--choose-filter-function (cadr filter-elem)))
 
   ;; create the keymap
   (set (make-local-variable 'visfilt--current-configuration-alist) config)
@@ -325,7 +323,6 @@ The `CONFIG' is a configuration which will override
   (use-local-map visfilt-mode-map)
 
   (message "Configuration is %s" visfilt--current-configuration-alist)
-  (make-local-variable 'visfilt--choose-filter-function)
   (make-local-variable 'visfilt-displayed-elements)
 
   (setq visfilt--search-string "")
@@ -335,18 +332,56 @@ The `CONFIG' is a configuration which will override
 
 ;; emacs -Q -L $PWD -l visfilt --eval '(setq debug-on-error t stack-trace-on-error t debug-on-quit t)' --eval '(vf-test-buffer-list)'
 
-(require 'recentf)
-(recentf-load-list)
+;;; Command functionality
 
+(defmacro visfilt-util-create (name &optional docstring &rest body)
+  (declare (doc-string 2))
+  `(defun ,(intern (format "visfilt-command-%s" (symbol-name name))) (&optional regexp-p)
+     ,(format "Visually filters %s. Use \\[universal-argument] to enable regular expression matching." docstring )
+     (interactive "P")
+     (progn ,@body)
+)
+)
+
+(visfilt-util-create buffer-list
+ "the buffer list"
+ (visfilt (delq nil
+		(mapcar (lambda (buf)
+			  (with-current-buffer buf
+			    (let ((name (buffer-name)))
+			      (if (string= (substring name 0 1) " ")
+				  nil
+				name))))
+			(buffer-list)))
+  (lambda (x) (if x (switch-to-buffer (car x))))
+  :regexp regexp-p :buffer-name "*vf-select-buffer*"))
+
+
+(visfilt-util-create recentf-list
+ "`recentf-list'"
+
+  (when (not (boundp 'recentf-list))
+    (recentf-load-list))
+
+  (visfilt
+   recentf-list
+   (lambda (x) (if x (find-file (car x))))
+   :regexp regexp-p :append-key-list ".*/" :buffer-name "*vf-select-buffer*")
+)
+
+
+(autoload 'recentf-load-list "recentf")
 (defun vf-test-buffer-list ()
   "Uses visfilt to select buffer."
   (interactive)
+
+  (when (not (boundp 'recentf-list))
+    (recentf-load-list))
+
   (visfilt
    recentf-list
    (lambda (x) (if x (find-file (car x))))
    :regexp t :append-key-list ".*/" :buffer-name "*vf-select-buffer*"))
-
-
 
 (provide 'visfilt)
 
