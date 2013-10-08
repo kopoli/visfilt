@@ -336,43 +336,71 @@ The `CONFIG' is a configuration which will override
 
 ;; emacs -Q -L $PWD -l visfilt --eval '(setq debug-on-error t stack-trace-on-error t debug-on-quit t)' --eval '(vf-test-buffer-list)'
 
-;;; Command functionality
+;;; command functionality
 
-(defmacro visfilt-util-create (name &optional docstring &rest body)
-  (declare (doc-string 2))
-  `(defun ,(intern (format "visfilt-command-%s" (symbol-name name))) (&optional regexp-p)
-     ,(format "Visually filters %s. Use \\[universal-argument] to enable regular expression matching." docstring )
+;;;###autoload
+(defmacro visfilt-command-create (name &optional docstring &rest body)
+  "Create an interactive function for `visfilt'.
+
+The `NAME' is the symbol that will be created.  In the function
+docstring the argument `DOCSTRING' will be the part that the
+generated function will filter.  The `BODY' should include a call
+to `visfilt'.  The function will have one argument `REGEXP-P'
+which should be given to the call to `visfilt'."
+  (declare (indent defun) (doc-string 2))
+  `(defun ,(intern (symbol-name name)) (&optional regexp-p)
+     ,(format (concat "Visually filters %s.\n"
+		      "Use \\[universal-argument] to enable regular expression"
+		      " matching.") docstring)
      (interactive "P")
-     (progn ,@body)
-)
-)
-
-(visfilt-util-create buffer-list
- "the buffer list"
- (visfilt (delq nil
-		(mapcar (lambda (buf)
-			  (with-current-buffer buf
-			    (let ((name (buffer-name)))
-			      (if (string= (substring name 0 1) " ")
-				  nil
-				name))))
-			(buffer-list)))
-  (lambda (x) (if x (switch-to-buffer (car x))))
-  :regexp regexp-p :buffer-name "*vf-select-buffer*"))
+     (progn ,@body)))
 
 
-(visfilt-util-create recentf-list
- "`recentf-list'"
+(visfilt-command-create visfilt-command-buffer-list
+  "the buffer list"
+  (visfilt (delq nil
+		 (mapcar (lambda (buf)
+			   (with-current-buffer buf
+			     (let ((name (buffer-name)))
+			       (if (string= (substring name 0 1) " ")
+				   nil
+				 name))))
+			 (buffer-list)))
+	   (lambda (x) (if x (switch-to-buffer (car x))))
+	   :regexp regexp-p :buffer-name "*vf-select-buffer*"))
 
-  (when (not (boundp 'recentf-list))
+
+(visfilt-command-create visfilt-command-recentf-list
+  "`recentf-list'"
+  (when (or (not (boundp 'recentf-list)) (null recentf-list))
+    (require 'recentf)
     (recentf-load-list))
 
-  (visfilt
-   recentf-list
-   (lambda (x) (if x (find-file (car x))))
-   :regexp regexp-p :append-key-list ".*/" :buffer-name "*vf-select-buffer*")
-)
+  (visfilt recentf-list
+	   (lambda (x) (if x (find-file (car x))))
+	   :regexp regexp-p :append-key-list ".*/" :buffer-name "*vf-recentf-list*"))
 
+
+(defvar visfilt-command-occur-pre-hook nil)
+(defvar visfilt-command-occur-post-hook nil)
+
+(visfilt-command-create visfilt-command-occur
+  "the current buffer `occur'-style"
+
+  (run-hooks 'visfilt-command-occur-pre-hook)
+  (visfilt (current-buffer)
+	   (lambda (x) (when x
+			 (save-restriction)
+			 (widen)
+			 (goto-char (point-min))
+			 (forward-line (1- (cadr x)))
+			 (run-hooks 'visfilt-command-occur-post-hook)))
+	   :buffer-name (format "*vf-occur: %s*" (buffer-name))
+	   :display-line-function #'(lambda (elem)
+				      (format "%4d %s" (cadr elem) (car elem)))
+	   :append-key-list "./ "
+	   :regexp regexp-p)
+)
 
 (autoload 'recentf-load-list "recentf")
 (defun vf-test-buffer-list ()
