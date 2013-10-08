@@ -174,7 +174,7 @@ Get the configuration from `CONF' or from
     (dolist (k (string-to-list (concat (visfilt--get :search-key-list)
 				       (visfilt--get :append-key-list)
 				       (if (visfilt--get :regexp)
-					   "[]\\.*?^$|=<>`'"
+					   "[]\\.*?^$|=<>`'+"
 					 ""))))
       (setq k (char-to-string k))
       (when (string= k " ") (setq k "SPC"))
@@ -192,7 +192,8 @@ Displays the `SEARCHSTR' and`COUNT'.  When run without arguments,
 returns the number of rows the header will take."
   (if (and (null searchstr) (null count))
       2
-    (format "String(%d): %s\n" count searchstr)))
+    (format "%s (%d): %s\n" (if (visfilt--get :regexp) "Regular expression" "String")
+	    count searchstr)))
 
 (defun visfilt-run-callback ()
   "Run the callback that is given to `visfilt'.
@@ -219,11 +220,14 @@ This is run when the wanted element is selected."
   (let* ((max-items (or (visfilt--get :max-items)
 			(- (window-height) 1
 			   (funcall (visfilt--get :header-format-function)))))
-	 (displayed
-	  (funcall visfilt--choose-filter-function
-		   visfilt--search-data max-items
-		   (visfilt--process-search-string)))
-	 start-point)
+	 displayed start-point)
+
+    ;; do the filtering and ignore errors
+    (condition-case err
+	(setq displayed (funcall visfilt--choose-filter-function
+				 visfilt--search-data max-items
+				 (visfilt--process-search-string)))
+      (invalid-regexp nil))
 
     ;; insert the header
     (insert (funcall (visfilt--get :header-format-function)
