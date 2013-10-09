@@ -354,7 +354,9 @@ which should be given to the call to `visfilt'."
      (interactive "P")
      (progn ,@body)))
 
+;;; command functionality
 
+;;;###autoload (autoload 'visfilt-command-buffer-list "visfilt")
 (visfilt-command-create visfilt-command-buffer-list
   "the buffer list"
   (visfilt (delq nil
@@ -369,6 +371,7 @@ which should be given to the call to `visfilt'."
 	   :regexp regexp-p :buffer-name "*vf-select-buffer*"))
 
 
+;;;###autoload (autoload 'visfilt-command-recentf-list "visfilt")
 (visfilt-command-create visfilt-command-recentf-list
   "`recentf-list'"
   (when (or (not (boundp 'recentf-list)) (null recentf-list))
@@ -380,26 +383,41 @@ which should be given to the call to `visfilt'."
 	   :regexp regexp-p :append-key-list ".*/" :buffer-name "*vf-recentf-list*"))
 
 
-(defvar visfilt-command-occur-pre-hook nil)
-(defvar visfilt-command-occur-post-hook nil)
+;;;###autoload
+(defvar visfilt-command-occur-before-jump-hook nil
+  "Hooks to run before jump in `visfilt-command-occur'.")
 
+;;;###autoload
+(defvar visfilt-command-occur-after-jump-hook nil
+  "Hooks to run after jump in `visfilt-command-occur'.")
+
+(defvar visfilt-command-occur--after-jump-functions nil
+  "Functions that are run after `visfilt-command-occur' has jumped to a location.")
+
+(autoload 'org-reveal "org")
+(add-hook 'visfilt-command-occur--after-jump-functions
+	  #'(lambda () (when (eq major-mode 'org-mode)
+			 (org-reveal))))
+
+;;;###autoload (autoload 'visfilt-command-occur "visfilt")
 (visfilt-command-create visfilt-command-occur
   "the current buffer `occur'-style"
-
-  (run-hooks 'visfilt-command-occur-pre-hook)
+  (run-hooks 'visfilt-command-occur-before-jump-hook)
   (visfilt (current-buffer)
-	   (lambda (x) (when x
-			 (save-restriction)
-			 (widen)
-			 (goto-char (point-min))
-			 (forward-line (1- (cadr x)))
-			 (run-hooks 'visfilt-command-occur-post-hook)))
+	   (lambda (x)
+	     (when x
+	       (save-restriction)
+	       (widen)
+	       (goto-char (point-min))
+	       (forward-line (1- (cadr x)))
+	       (run-hooks 'visfilt-command-occur--after-jump-functions)
+	       (run-hooks 'visfilt-command-occur-after-jump-hook)))
 	   :buffer-name (format "*vf-occur: %s*" (buffer-name))
 	   :display-line-function #'(lambda (elem)
 				      (format "%4d %s" (cadr elem) (car elem)))
 	   :append-key-list "./ "
-	   :regexp regexp-p)
-)
+	   :regexp regexp-p))
+
 
 (autoload 'recentf-load-list "recentf")
 (defun vf-test-buffer-list ()
