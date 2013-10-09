@@ -13,29 +13,30 @@
   list. The view is updated each time a new character is typed. You can select
   the wanted file name with RET and the file will be opened.
 
+  This functionality is also very similar to [[https://github.com/emacs-helm/helm][emacs-helm]].
+
 ** What can it do ?
 
-   The file visfilt.el is the generic core functionality and useless by
-   itself. The file visfilt-util.el has the following interactive functions:
+   The library contains the main function *visfilt*, which is the generic core
+   functionality. There is a macro *visfilt-command-create* which is used to
+   create interactive function wrappers for *visfilt*.
 
-   *vf-find-file-in-tags*: Filters and opens files listed in TAGS tables. 
+   Interactive functions are the following:
 
-   *vf-buffer-list*: Switches-to a buffer.
+   *visfilt-command-buffer-list*: Switches to a buffer.
+   *visfilt-command-recentf-list*: Opens a file from recentf-list.
+   *visfilt-command-occur*: Jump to a line in the current buffer similar to occur.
 
-   *vf-recent-file-list*: Opens a file from recentf-list.
-
-   *vf-occur-jump*: Jumps to a line in the current buffer. Output is similar
-    to occur.
 
 ** Installation
 
-   Basically clone the repository and load/require the files visfilt.el and
-   visfilt-util.el.
+   Clone the repository and load the library. Bind the wanted
+   functions to keys.
 
    If you use [[https://github.com/dimitri/el-get][el-get]], you can use the following or similar recipe to install
    this:
 
 #+BEGIN_SRC emacs-lisp
-  (:name visfilt :type git :features (visfilt visfilt-util) :url "https://github.com/kopoli/visfilt.git")
+  (:name visfilt :type github :pkgname "kopoli/visfilt")
 #+END_SRC
 
