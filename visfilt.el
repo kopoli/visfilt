@@ -294,6 +294,7 @@ removes the previous search string overlay face."
 	(visfilt--get-filter element (cdr filter-list)))
     nil))
 
+
 ;;; public core functionality
 
 ;;;###autoload
@@ -329,7 +330,6 @@ The `CONFIG' is a configuration which will override
   (set (make-local-variable 'visfilt-mode-map) (visfilt--generate-keymap))
   (use-local-map visfilt-mode-map)
 
-  (message "Configuration is %s" visfilt--current-configuration-alist)
   (make-local-variable 'visfilt-displayed-elements)
 
   (setq visfilt--search-string "")
@@ -354,6 +354,7 @@ which should be given to the call to `visfilt'."
      (interactive "P")
      (progn ,@body)))
 
+
 ;;; command functionality
 
 ;;;###autoload (autoload 'visfilt-command-buffer-list "visfilt")
@@ -419,18 +420,27 @@ which should be given to the call to `visfilt'."
 	   :regexp regexp-p))
 
 
-(autoload 'recentf-load-list "recentf")
-(defun vf-test-buffer-list ()
-  "Uses visfilt to select buffer."
-  (interactive)
+;;;###autoload (autoload 'visfilt-command-find-file-in-tags "visfilt")
+(visfilt-command-create visfilt-command-find-file-in-tags
+ "the list of files in tags tables"
+ (save-excursion
+   (let ((tags-file-name nil))
+     (visit-tags-table-buffer)
 
-  (when (not (boundp 'recentf-list))
-    (recentf-load-list))
+     ;; lecixally bind the tags-file-name, because it might change before
+     ;; entering the callback
+     (let ((tf tags-file-name))
+       (visfilt
+	(tags-table-files)
+	(lambda (x)
+	  (find-file (expand-file-name (car x) (file-name-directory tf))))
+	:append-key-list "./"
+	:buffer-name "*vf-tags-files*")))))
 
-  (visfilt
-   recentf-list
-   (lambda (x) (if x (find-file (car x))))
-   :regexp t :append-key-list ".*/" :buffer-name "*vf-select-buffer*"))
+
+;;; testing
+
+;; TODO
 
 ;; emacs -Q -L $PWD -l visfilt --eval '(setq debug-on-error t stack-trace-on-error t debug-on-quit t)' --eval '(vf-test-buffer-list)'
 
