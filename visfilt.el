@@ -56,7 +56,8 @@ The following kind of keys are supported:
 :append-key-list     Extra keys that are appended into the search-key-list.
 :choose-callback     Callback that will be run when visfilt returns.
 :search-string-face  Face that is set for matching strings.
-:max-items           Maximum number of items that are displayed.
+:max-items           Maximum number of items that are displayed.  If nil, then
+                     use (window-height).
 :regexp              Is the string interpret as regular expression.
 
 :header-format-function
@@ -160,7 +161,7 @@ This is set by defun `visfilt' to a value from
   "Get configuration item named `IDENT'.
 Get the configuration from `CONF' or from
 `visfilt--current-configuration-alist'."
-  (cadr (memq ident (or conf visfilt--current-configuration-alist))))
+  (plist-get (or conf visfilt--current-configuration-alist) ident))
 
 (defun visfilt--generate-keymap ()
   "Generate the `visfilt-mode' keymap."
@@ -223,7 +224,7 @@ This is run when the wanted element is selected."
 	 displayed start-point)
 
     ;; do the filtering and ignore errors
-    (condition-case err
+    (condition-case nil
 	(setq displayed (funcall visfilt--choose-filter-function
 				 visfilt--search-data max-items
 				 (visfilt--process-search-string)))
@@ -285,13 +286,15 @@ removes the previous search string overlay face."
   (hi-lock-mode 1))
 
 (defun visfilt--get-filter (element filter-list)
-  "Get the proper filter element from a list similar
-to `visfilt-filter-functions'"
+  "Get the proper filter `ELEMENT' from `FILTER-LIST'.
+`FILTER-LIST' should be of similar format as `visfilt-filter-functions'"
   (if filter-list
       (if (funcall (caar filter-list) element)
 	  (car filter-list)
 	(visfilt--get-filter element (cdr filter-list)))
     nil))
+
+;;; public core functionality
 
 ;;;###autoload
 (defun visfilt (elements callback &rest config)
@@ -333,10 +336,6 @@ The `CONFIG' is a configuration which will override
   (setq visfilt--search-data elements)
 
   (visfilt--update))
-
-;; emacs -Q -L $PWD -l visfilt --eval '(setq debug-on-error t stack-trace-on-error t debug-on-quit t)' --eval '(vf-test-buffer-list)'
-
-;;; command functionality
 
 ;;;###autoload
 (defmacro visfilt-command-create (name &optional docstring &rest body)
@@ -414,6 +413,8 @@ which should be given to the call to `visfilt'."
    recentf-list
    (lambda (x) (if x (find-file (car x))))
    :regexp t :append-key-list ".*/" :buffer-name "*vf-select-buffer*"))
+
+;; emacs -Q -L $PWD -l visfilt --eval '(setq debug-on-error t stack-trace-on-error t debug-on-quit t)' --eval '(vf-test-buffer-list)'
 
 (provide 'visfilt)
 
