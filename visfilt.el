@@ -3,10 +3,9 @@
 ;; Copyright (C) 2012, 2013 Kalle Kankare
 
 ;; Author: Kalle Kankare <kalle.kankare@iki.fi>
-;; Maintainer: Kalle Kankare <kalle.kankare@iki.fi>
 ;; Created: 15 Jul 2012
 ;; Keywords: display utility, filtering
-;; Version: 1.0
+;; Version: 1.2
 
 ;; This file is not part of GNU Emacs.
 
@@ -30,6 +29,11 @@
 ;; elements on screen.
 
 ;; Visfilt is heavily influenced by eassist.el from CEDET.
+
+;;; Change Log:
+
+;; v1.2 2013-10-14
+;; - Refactored the whole functionality. Removed visfilt-util.el
 
 ;;; Code:
 
