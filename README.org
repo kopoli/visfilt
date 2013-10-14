@@ -23,9 +23,9 @@
 
    Interactive functions are the following:
 
-   *visfilt-command-buffer-list*: Switches to a buffer.
-   *visfilt-command-recentf-list*: Opens a file from recentf-list.
-   *visfilt-command-occur*: Jump to a line in the current buffer similar to occur.
+   - *visfilt-command-buffer-list*: Switches to a buffer.
+   - *visfilt-command-recentf-list*: Opens a file from recentf-list.
+   - *visfilt-command-occur*: Jump to a line in the current buffer similar to occur.
 
 
 ** Installation
