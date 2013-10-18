@@ -4,6 +4,7 @@
 
 ;; Author: Kalle Kankare <kalle.kankare@iki.fi>
 ;; Created: 15 Jul 2012
+;; Package-Requires: ((cl-lib "0.1"))
 ;; Keywords: display utility, filtering
 ;; Version: 1.2
 
