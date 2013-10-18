@@ -409,20 +409,23 @@ which should be given to the call to `visfilt'."
 (visfilt-command-create visfilt-command-occur
   "the current buffer `occur'-style"
   (run-hooks 'visfilt-command-occur-before-jump-hook)
-  (visfilt (current-buffer)
-	   (lambda (x)
-	     (when x
-	       (save-restriction)
-	       (widen)
-	       (goto-char (point-min))
-	       (forward-line (1- (cadr x)))
-	       (run-hooks 'visfilt-command-occur--after-jump-functions)
-	       (run-hooks 'visfilt-command-occur-after-jump-hook)))
-	   :buffer-name (format "*vf-occur: %s*" (buffer-name))
-	   :display-line-function #'(lambda (elem)
-				      (format "%4d %s" (cadr elem) (car elem)))
-	   :append-key-list "./ "
-	   :regexp regexp-p))
+  (let ((buffer (current-buffer)))
+    (visfilt buffer
+	     (lambda (x)
+	       (when x
+		 (switch-to-buffer buffer)
+		 (message "Current buffer %s" (current-buffer))
+		 (save-restriction
+		   (widen)
+		   (goto-char (point-min))
+		   (forward-line (1- (cadr x))))
+		 (run-hooks 'visfilt-command-occur--after-jump-functions)
+		 (run-hooks 'visfilt-command-occur-after-jump-hook)))
+	     :buffer-name (format "*vf-occur: %s*" (buffer-name))
+	     :display-line-function #'(lambda (elem)
+					(format "%4d %s" (cadr elem) (car elem)))
+	     :append-key-list "./ "
+	     :regexp regexp-p)))
 
 
 ;;;###autoload (autoload 'visfilt-command-find-file-in-tags "visfilt")
