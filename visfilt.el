@@ -440,7 +440,8 @@ which should be given to the call to `visfilt'."
 	(lambda (x)
 	  (find-file (expand-file-name (car x) (file-name-directory tf))))
 	:append-key-list "./"
-	:buffer-name "*vf-tags-files*")))))
+	:buffer-name "*vf-tags-files*"
+	:regexp regexp-p)))))
 
 
 ;;; testing
